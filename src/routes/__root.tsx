@@ -7,6 +7,8 @@ import {
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
+import { Toaster } from "@/components/ui/sonner";
+import { SiteHeader } from "@/components/site-header";
 
 import appCss from "../styles.css?url";
 
@@ -72,19 +74,24 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "Manga Labs — The Wiki for Manga Readers" },
+      { name: "description", content: "Discover top manga, track what you own, and build your shelf. Manga Labs is the bold wiki + bookshelf for readers worldwide." },
+      { name: "author", content: "Manga Labs" },
+      { property: "og:title", content: "Manga Labs — The Wiki for Manga Readers" },
+      { property: "og:description", content: "Top manga worldwide, ratings, and a personal bookshelf." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
-      { name: "twitter:site", content: "@Lovable" },
     ],
     links: [
       {
         rel: "stylesheet",
         href: appCss,
+      },
+      { rel: "preconnect", href: "https://fonts.googleapis.com" },
+      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "" },
+      {
+        rel: "stylesheet",
+        href: "https://fonts.googleapis.com/css2?family=Archivo+Black&family=Hind:wght@400;500;600;700&display=swap",
       },
     ],
   }),
@@ -113,7 +120,13 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <Outlet />
+      <div className="flex min-h-screen flex-col bg-background text-foreground">
+        <SiteHeader />
+        <main className="flex-1">
+          <Outlet />
+        </main>
+      </div>
+      <Toaster />
     </QueryClientProvider>
   );
 }
