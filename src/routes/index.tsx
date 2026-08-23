@@ -3,7 +3,9 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight, BookMarked, PenTool, Star, Trophy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import heroImg from "@/assets/hero-manga.jpg";
-import { TOP_MANGA } from "@/data/top-manga";
+import { useEffect, useState } from "react";
+import { getTopManga, type Manga } from "../lib/anilist";
+
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -19,6 +21,21 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
+  const [topManga, setTopManga] = useState<Manga[]>([]);
+const [loadingManga, setLoadingManga] = useState(true);
+const [mangaError, setMangaError] = useState<string | null>(null);
+
+useEffect(() => {
+  getTopManga(12)
+    .then(setTopManga)
+    .catch((error) => {
+      console.error("Failed to load AniList manga:", error);
+      setMangaError("Unable to load manga right now.");
+    })
+    .finally(() => {
+      setLoadingManga(false);
+    });
+}, []);
   return (
     <div>
       {/* HERO */}
@@ -63,53 +80,106 @@ function Index() {
 
       {/* TOP READS */}
       <section id="top-reads" className="border-b-2 border-ink bg-paper">
-        <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6">
-          <div className="flex items-end justify-between gap-6 border-b-2 border-ink pb-6">
-            <div>
-              <p className="text-xs font-bold uppercase tracking-widest text-primary">Volume 01</p>
-              <h2 className="mt-2 font-display text-4xl sm:text-5xl">Top Manga Worldwide</h2>
-            </div>
-            <p className="hidden max-w-xs text-sm text-muted-foreground md:block">
-              Ranked by reader ratings across the Manga Labs community.
-            </p>
-          </div>
+  <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6">
+    <div className="flex items-end justify-between gap-6 border-b-2 border-ink pb-6">
+      <div>
+        <p className="text-xs font-bold uppercase tracking-widest text-primary">
+          Volume 01
+        </p>
 
-          <ol className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {TOP_MANGA.map((m) => (
-              <li
-                key={m.rank}
-                className="group relative border-2 border-ink bg-card p-6 transition-transform hover:-translate-y-1 hover:shadow-stamp"
-              >
-                <div className="flex items-start justify-between">
-                  <span className="font-display text-6xl leading-none text-primary">
-                    {String(m.rank).padStart(2, "0")}
-                  </span>
-                  <span className="flex items-center gap-1 border-2 border-ink bg-accent px-2 py-1 text-xs font-bold">
-                    <Star className="h-3 w-3 fill-ink" strokeWidth={2.5} /> {m.rating}
-                  </span>
-                </div>
-                <h3 className="mt-4 font-display text-2xl leading-tight">{m.title}</h3>
-                <p className="text-sm text-muted-foreground">by {m.author}</p>
-                <p className="mt-3 text-sm">{m.blurb}</p>
-                <div className="mt-4 flex items-center justify-between border-t border-ink/20 pt-3 text-xs font-semibold uppercase tracking-wide">
-                  <span>{m.genre}</span>
-                  <span>{m.volumes} vols</span>
-                </div>
-              </li>
-            ))}
-          </ol>
-        </div>
-      </section>
+        <h2 className="mt-2 font-display text-4xl sm:text-5xl">
+          Top Manga Worldwide
+        </h2>
+      </div>
+
+      <p className="hidden max-w-xs text-sm text-muted-foreground md:block">
+        Ranked by popularity across the AniList community.
+      </p>
+    </div>
+
+    {loadingManga && (
+      <p className="mt-10 text-sm font-bold uppercase tracking-wide">
+        Loading manga...
+      </p>
+    )}
+
+    {mangaError && (
+      <p className="mt-10 text-sm font-bold text-red-600">
+        {mangaError}
+      </p>
+    )}
+
+    {!loadingManga && !mangaError && (
+      <ol className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {topManga.map((m) => (
+          <li
+            key={m.id}
+            className="group relative border-2 border-ink bg-card p-6 transition-transform hover:-translate-y-1 hover:shadow-stamp"
+          >
+<div className="flex items-start justify-between">
+  <span className="font-display text-6xl leading-none text-primary">
+    {String(m.rank).padStart(2, "0")}
+  </span>
+
+  <span className="flex items-center gap-1 border-2 border-ink bg-accent px-2 py-1 text-xs font-bold">
+    <Star
+      className="h-3 w-3 fill-ink"
+      strokeWidth={2.5}
+    />
+
+    {m.rating ?? "N/A"}
+  </span>
+</div>
+
+{/* Full manga artwork */}
+<div className="mt-6 aspect-square w-full border-2 border-ink bg-paper flex items-center justify-center overflow-hidden">
+  <img
+    src={m.coverImage.large}
+    alt={m.title.english || m.title.romaji}
+    className="h-full w-full object-contain"
+    loading="lazy"
+  />
+</div>
+
+<h3 className="mt-4 font-display text-2xl leading-tight">
+  {m.title.english || m.title.romaji}
+</h3>
+
+<p className="text-sm text-muted-foreground">
+  by {m.author}
+</p>
+
+<p className="mt-3 text-sm">
+  {m.description
+    ? m.description.replace(/<[^>]*>/g, "").slice(0, 180) + "..."
+    : "No description available."}
+</p>
+
+<div className="mt-4 flex items-center justify-between border-t border-ink/20 pt-3 text-xs font-semibold uppercase tracking-wide">
+  <span>{m.genres[0] ?? "Manga"}</span>
+
+  <span>
+    {m.volumes !== null
+      ? `${m.volumes} vols`
+      : "Volumes N/A"}
+  </span>
+</div>
+          </li>
+        ))}
+      </ol>
+    )}
+  </div>
+</section>
 
       {/* CREATE & READ */}
       <section className="border-b-2 border-ink bg-ink text-paper">
         <div className="mx-auto grid max-w-7xl gap-12 px-4 py-20 sm:px-6 md:grid-cols-2">
           <div>
             <p className="text-xs font-bold uppercase tracking-widest text-accent">Create &amp; Read</p>
-            <h2 className="mt-2 font-display text-4xl text-paper sm:text-5xl">
+            <h2 className="mt-2 font-display text-4xl text-paper sm:text-5xl text-white">
               Your panels.<br />Your story.<br /><span className="text-primary">Published.</span>
             </h2>
-            <p className="mt-6 max-w-md text-paper/70">
+            <p className="mt-6 max-w-md text-paper/70 text-white">
               Sketch chapters in the browser, drop in panels, and export print-ready PDFs the community can rate alongside the classics.
             </p>
             <div className="mt-8 flex gap-3">
@@ -119,14 +189,6 @@ function Index() {
                 </Button>
               </Link>
             </div>
-          </div>
-          <div className="grid grid-cols-2 gap-3">
-            {["#01 Cover", "#02 Splash", "#03 Action", "#04 Quiet"].map((label, i) => (
-              <div key={label} className={`relative border-2 border-paper bg-paper/5 p-4 ${i % 2 ? "translate-y-6" : ""}`}>
-                <div className="aspect-[3/4] halftone opacity-30" />
-                <p className="mt-2 font-display text-sm uppercase tracking-widest text-accent">{label}</p>
-              </div>
-            ))}
           </div>
         </div>
       </section>
@@ -163,12 +225,19 @@ function Index() {
             </div>
             <div className="relative">
               <div className="grid grid-cols-3 gap-2 border-2 border-ink bg-card p-4 shadow-stamp">
-                {TOP_MANGA.slice(0, 9).map((m) => (
-                  <div key={m.rank} className="aspect-[2/3] border border-ink bg-gradient-to-br from-primary/10 to-accent/30 p-2">
-                    <p className="font-display text-[10px] leading-tight">{m.title}</p>
-                    <p className="mt-1 text-[8px] text-muted-foreground">{m.author}</p>
-                  </div>
-                ))}
+                {topManga.slice(0, 9).map((m) => (
+  <div
+    key={m.id}
+    className="aspect-[2/3] overflow-hidden border border-ink bg-paper"
+  >
+    <img
+      src={m.coverImage.large}
+      alt={m.title.english || m.title.romaji}
+      className="h-full w-full object-cover"
+      loading="lazy"
+    />
+  </div>
+))}
               </div>
             </div>
           </div>
@@ -177,7 +246,7 @@ function Index() {
 
       <footer className="border-t-2 border-ink bg-ink text-paper">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-4 py-8 sm:flex-row sm:px-6">
-          <p className="font-display text-lg">MANGA<span className="text-primary">LABS</span></p>
+          <p className="font-display text-lg">MANGA<span className="text-primary">SCOPEIN LABS </span></p>
           <p className="text-xs uppercase tracking-widest text-paper/60">© Manga Labs — Read. Rate. Create.</p>
         </div>
       </footer>
