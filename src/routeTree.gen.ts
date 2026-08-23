@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AuthenticatedBookshelfRouteImport } from './routes/_authenticated/bookshelf'
+import { Route as MangaIdRouteImport } from './routes/manga/$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -33,16 +34,23 @@ const AuthenticatedBookshelfRoute = AuthenticatedBookshelfRouteImport.update({
   path: '/bookshelf',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const MangaIdRoute = MangaIdRouteImport.update({
+  id: '/manga/$id',
+  path: '/manga/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/bookshelf': typeof AuthenticatedBookshelfRoute
+  '/manga/$id': typeof MangaIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/bookshelf': typeof AuthenticatedBookshelfRoute
+  '/manga/$id': typeof MangaIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -50,24 +58,27 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/login': typeof LoginRoute
   '/_authenticated/bookshelf': typeof AuthenticatedBookshelfRoute
+  '/manga/$id': typeof MangaIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '/bookshelf'
+  fullPaths: '/' | '/login' | '/bookshelf' | '/manga/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/bookshelf'
+  to: '/' | '/login' | '/bookshelf' | '/manga/$id'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
     | '/login'
     | '/_authenticated/bookshelf'
+    | '/manga/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   LoginRoute: typeof LoginRoute
+  MangaIdRoute: typeof MangaIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -100,6 +111,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedBookshelfRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/manga/$id': {
+      id: '/manga/$id'
+      path: '/manga/$id'
+      fullPath: '/manga/$id'
+      preLoaderRoute: typeof MangaIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -119,6 +137,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   LoginRoute: LoginRoute,
+  MangaIdRoute: MangaIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

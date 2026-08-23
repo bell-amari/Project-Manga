@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Search } from "lucide-react";
+import { MangaSearch } from "@/components/manga-search";
 
 export function SiteHeader() {
   const { user } = useAuth();
@@ -29,17 +29,15 @@ export function SiteHeader() {
         </Link>
 
         <nav className="hidden items-center gap-6 md:flex">
-          <div className="relative w-64">
-  <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" />
+          <MangaSearch />
 
-  <input
-    type="search"
-    placeholder="Search manga..."
-    className="h-9 w-full border-2 border-ink bg-paper/70 pl-9 pr-3 text-xs font-bold uppercase tracking-wide outline-none placeholder:text-muted-foreground focus:shadow-stamp"
-  />
-</div>
           {user && (
-            <Link to="/bookshelf" className="text-sm font-semibold uppercase tracking-wide hover:text-primary [&.active]:text-primary">My Shelf</Link>
+            <Link
+              to="/bookshelf"
+              className="text-sm font-semibold uppercase tracking-wide hover:text-primary [&.active]:text-primary"
+            >
+              My Shelf
+            </Link>
           )}
         </nav>
 
@@ -49,16 +47,28 @@ export function SiteHeader() {
               <Link to="/bookshelf">
                 <Button variant="ghost" size="sm" className="gap-2">
                   <UserIcon className="h-4 w-4" />
-                  <span className="hidden sm:inline">{user.email?.split("@")[0]}</span>
+                  <span className="hidden sm:inline">
+                    {user.email?.split("@")[0]}
+                  </span>
                 </Button>
               </Link>
-              <Button onClick={handleLogout} variant="ghost" size="sm" className="gap-2">
+
+              <Button
+                onClick={handleLogout}
+                variant="ghost"
+                size="sm"
+                className="gap-2"
+              >
                 <LogOut className="h-4 w-4" />
               </Button>
             </>
           ) : (
             <Link to="/login">
-              <Button variant="default" size="sm" className="font-display uppercase tracking-wide shadow-stamp-sm border-2 border-ink">
+              <Button
+                variant="default"
+                size="sm"
+                className="border-2 border-ink font-display uppercase tracking-wide shadow-stamp-sm"
+              >
                 Sign in
               </Button>
             </Link>
