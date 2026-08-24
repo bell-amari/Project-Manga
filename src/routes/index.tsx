@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Link } from "@tanstack/react-router";
 import { ArrowRight, BookMarked, PenTool, Star, Trophy } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import heroImg from "@/assets/hero-manga.jpg";
+import heroImg from "@/assets/hero-manga.png";
 import { useEffect, useState } from "react";
 import { getTopManga, type Manga } from "../lib/anilist";
 
@@ -274,10 +274,9 @@ function Index() {
 
       <footer className="border-t-2 border-ink bg-ink text-paper">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-4 py-8 sm:flex-row sm:px-6">
-          <p className="font-display text-lg">
-            MANGA<span className="text-primary">SCOPEIN LABS </span>
+          <p className="font-display text-white text-lg">SCOPEIN<span className="text-primary">LABS</span>
           </p>
-          <p className="text-xs uppercase tracking-widest text-paper/60">
+          <p className="text-xs uppercase tracking-widest text-white text-paper/60">
             © Manga Labs — Read. Rate. Create.
           </p>
         </div>
