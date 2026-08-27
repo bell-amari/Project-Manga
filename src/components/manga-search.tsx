@@ -1,4 +1,3 @@
-import { Link } from "@tanstack/react-router";
 import { LoaderCircle, Search, Star, X } from "lucide-react";
 import { useEffect, useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";
@@ -272,10 +271,9 @@ function SearchResults({
             : null;
 
         return (
-          <Link
+          <a
             key={manga.id}
-            to="/manga/$id"
-            params={{ id: String(manga.id) }}
+            href={`/manga/${manga.id}`}
             onClick={onSelect}
             className="group flex min-h-24 gap-3 border-b border-ink/15 p-3 last:border-b-0 active:bg-accent/45 hover:bg-accent/45 focus:bg-accent/45 focus:outline-none"
           >
@@ -319,7 +317,7 @@ function SearchResults({
                 )}
               </div>
             </div>
-          </Link>
+          </a>
         );
       })}
     </div>

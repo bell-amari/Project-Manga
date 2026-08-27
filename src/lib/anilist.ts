@@ -40,11 +40,6 @@ type AniListResponse<T> = {
   }[];
 };
 
-/**
- * Generic AniList GraphQL request.
- *
- * Every AniList request in the project goes through this function.
- */
 async function anilistRequest<T>(
   query: string,
   variables: Record<string, unknown> = {}
@@ -91,41 +86,30 @@ function mapManga(manga: any): Manga {
 
   return {
     id: manga.id,
-
     title: {
       english: manga.title?.english ?? null,
       romaji: manga.title?.romaji ?? "",
       native: manga.title?.native ?? null,
     },
-
     author,
-
     coverImage: {
       large: manga.coverImage?.large ?? "",
       extraLarge: manga.coverImage?.extraLarge ?? "",
     },
-
     rating: manga.averageScore
       ? Number((manga.averageScore / 10).toFixed(1))
       : null,
-
     popularity: manga.popularity ?? 0,
-
     favourites: manga.favourites ?? 0,
-
     description: manga.description ?? null,
-
     genres: manga.genres ?? [],
-
     chapters: manga.chapters ?? null,
-
     volumes: manga.volumes ?? null,
-
     status: manga.status ?? "UNKNOWN",
-
     siteUrl: manga.siteUrl ?? "",
   };
 }
+
 const TOP_MANGA_QUERY = `
   query ($page: Int, $perPage: Int) {
     Page(page: $page, perPage: $perPage) {
@@ -135,34 +119,25 @@ const TOP_MANGA_QUERY = `
         isAdult: false
       ) {
         id
-
         title {
           english
           romaji
           native
         }
-
         coverImage {
           large
           extraLarge
         }
-
         averageScore
         popularity
         favourites
-
         description
-
         genres
-
         chapters
         volumes
-
         status
-
         siteUrl
-
-        staff {
+        staff(perPage: 25) {
           edges {
             role
             node {
@@ -184,7 +159,7 @@ export async function getTopManga(limit = 12): Promise<Manga[]> {
     };
   }>(TOP_MANGA_QUERY, {
     page: 1,
-    perPage: limit,
+    perPage: Math.min(Math.max(limit, 1), 25),
   });
 
   return data.Page.media.map((manga, index) => ({
@@ -197,93 +172,76 @@ const MANGA_BY_ID_QUERY = `
   query ($id: Int!) {
     Media(id: $id, type: MANGA) {
       id
-
       title {
         english
         romaji
         native
       }
-
       coverImage {
         large
         extraLarge
       }
-
       averageScore
       popularity
       favourites
-
       description
-
       genres
-
       chapters
       volumes
-
       status
-
       siteUrl
     }
   }
 `;
 
-export async function getMangaById(
-  id: number
-): Promise<Manga> {
+export async function getMangaById(id: number): Promise<Manga> {
   const data = await anilistRequest<{
     Media: any;
-  }>(MANGA_BY_ID_QUERY, {
-    id,
-  });
+  }>(MANGA_BY_ID_QUERY, { id });
+
+  if (!data.Media) {
+    throw new Error("AniList could not find this manga.");
+  }
 
   return mapManga(data.Media);
 }
 
 const MANGA_BY_TITLE_QUERY = `
   query ($search: String!) {
-    Media(
-      search: $search
-      type: MANGA
-    ) {
+    Media(search: $search, type: MANGA) {
       id
-
       title {
         english
         romaji
         native
       }
-
       coverImage {
         large
         extraLarge
       }
-
       averageScore
       popularity
       favourites
-
       description
-
       genres
-
       chapters
       volumes
-
       status
-
       siteUrl
     }
   }
 `;
 
-export async function getMangaByTitle(
-  title: string
-): Promise<Manga> {
+export async function getMangaByTitle(title: string): Promise<Manga> {
   const data = await anilistRequest<{
     Media: any;
   }>(MANGA_BY_TITLE_QUERY, {
     search: title,
   });
+
+  if (!data.Media) {
+    throw new Error("AniList could not find this manga.");
+  }
 
   return mapManga(data.Media);
 }
