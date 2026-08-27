@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Search } from "lucide-react";
+import { MangaSearch, MobileMangaSearch } from "@/components/manga-search";
 
 export function SiteHeader() {
   const { user } = useAuth();
@@ -18,8 +18,8 @@ export function SiteHeader() {
 
   return (
     <header className="sticky top-0 z-40 border-b-2 border-ink bg-paper/95 backdrop-blur">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6">
-        <Link to="/" className="flex items-center gap-2 group">
+      <div className="relative mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6">
+        <Link to="/" className="group flex items-center gap-2 cursor-pointer">
           <div className="flex h-9 w-9 items-center justify-center bg-primary text-primary-foreground shadow-stamp-sm transition-transform group-hover:-rotate-3">
             <BookOpen className="h-5 w-5" strokeWidth={2.5} />
           </div>
@@ -29,36 +29,41 @@ export function SiteHeader() {
         </Link>
 
         <nav className="hidden items-center gap-6 md:flex">
-          <div className="relative w-64">
-  <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" />
-
-  <input
-    type="search"
-    placeholder="Search manga..."
-    className="h-9 w-full border-2 border-ink bg-paper/70 pl-9 pr-3 text-xs font-bold uppercase tracking-wide outline-none placeholder:text-muted-foreground focus:shadow-stamp"
-  />
-</div>
+          <MangaSearch />
           {user && (
-            <Link to="/bookshelf" className="text-sm font-semibold uppercase tracking-wide hover:text-primary [&.active]:text-primary">My Shelf</Link>
+            <Link
+              to="/bookshelf"
+              className="cursor-pointer text-sm font-semibold uppercase tracking-wide hover:text-primary [&.active]:text-primary"
+            >
+              My Shelf
+            </Link>
           )}
         </nav>
+
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 md:hidden">
+          <MobileMangaSearch />
+        </div>
 
         <div className="flex items-center gap-2">
           {user ? (
             <>
-              <Link to="/bookshelf">
-                <Button variant="ghost" size="sm" className="gap-2">
+              <Link to="/bookshelf" className="cursor-pointer">
+                <Button variant="ghost" size="sm" className="gap-2 cursor-pointer">
                   <UserIcon className="h-4 w-4" />
                   <span className="hidden sm:inline">{user.email?.split("@")[0]}</span>
                 </Button>
               </Link>
-              <Button onClick={handleLogout} variant="ghost" size="sm" className="gap-2">
+              <Button onClick={handleLogout} variant="ghost" size="sm" className="gap-2 cursor-pointer">
                 <LogOut className="h-4 w-4" />
               </Button>
             </>
           ) : (
-            <Link to="/login">
-              <Button variant="default" size="sm" className="font-display uppercase tracking-wide shadow-stamp-sm border-2 border-ink">
+            <Link to="/login" className="cursor-pointer">
+              <Button
+                variant="default"
+                size="sm"
+                className="cursor-pointer border-2 border-ink font-display uppercase tracking-wide shadow-stamp-sm"
+              >
                 Sign in
               </Button>
             </Link>
