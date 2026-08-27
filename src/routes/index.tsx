@@ -1,7 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { Link } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, BookMarked, PenTool, Star, Trophy } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import heroImg from "@/assets/hero-manga.png";
 import { useEffect, useState } from "react";
 import { getTopManga, type Manga } from "../lib/anilist";
@@ -39,14 +37,15 @@ function Index() {
         setLoadingManga(false);
       });
   }, []);
+
   return (
     <div>
       {/* HERO */}
-      <section className="relative overflow-hidden border-b-2 border-ink">
+      <section className="ml-section relative overflow-hidden">
         <div className="absolute inset-0 halftone opacity-[0.04]" aria-hidden />
         <div className="mx-auto grid max-w-7xl gap-10 px-4 py-16 sm:px-6 md:grid-cols-2 md:py-24 lg:py-32">
           <div className="flex flex-col justify-center">
-            <span className="inline-flex w-fit items-center gap-2 border-2 border-ink bg-accent px-3 py-1 text-xs font-bold uppercase tracking-widest shadow-stamp-sm">
+            <span className="ml-tag w-fit gap-2 shadow-stamp-sm">
               <Trophy className="h-3.5 w-3.5" /> The Wiki for Manga Readers
             </span>
             <h1 className="mt-6 font-display text-5xl leading-[0.95] tracking-tight sm:text-6xl lg:text-7xl">
@@ -61,28 +60,17 @@ function Index() {
               your own panels as PDFs.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
-              <Link to="/login">
-                <Button
-                  size="lg"
-                  className="h-12 border-2 border-ink font-display uppercase tracking-wider shadow-stamp"
-                >
-                  Start your shelf <ArrowRight className="ml-2 h-5 w-5" />
-                </Button>
+              <Link to="/login" className="ml-action">
+                Start your shelf <ArrowRight className="h-5 w-5" />
               </Link>
-              <a href="#top-reads">
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="h-12 border-2 border-ink font-display uppercase tracking-wider hover:bg-ink hover:text-paper"
-                >
-                  Browse top reads
-                </Button>
+              <a href="#top-reads" className="ml-action-outline">
+                Browse top reads
               </a>
             </div>
           </div>
           <div className="relative">
             <div
-              className="absolute -inset-4 border-2 border-ink bg-primary translate-x-3 translate-y-3"
+              className="absolute -inset-4 translate-x-3 translate-y-3 border-2 border-ink bg-primary"
               aria-hidden
             />
             <img
@@ -97,12 +85,11 @@ function Index() {
       </section>
 
       {/* TOP READS */}
-      <section id="top-reads" className="border-b-2 border-ink bg-paper">
+      <section id="top-reads" className="ml-section bg-paper">
         <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6">
           <div className="flex items-end justify-between gap-6 border-b-2 border-ink pb-6">
             <div>
               <p className="text-xs font-bold uppercase tracking-widest text-primary">Volume 01</p>
-
               <h2 className="mt-2 font-display text-4xl sm:text-5xl">Top Manga Worldwide</h2>
             </div>
 
@@ -122,7 +109,7 @@ function Index() {
               {topManga.map((m) => (
                 <li
                   key={m.id}
-                  className="group relative border-2 border-ink bg-card transition-transform hover:-translate-y-1 hover:shadow-stamp"
+                  className="ml-interactive-card ml-interactive-card--strong group relative"
                 >
                   <Link
                     to="/manga/$id"
@@ -134,15 +121,13 @@ function Index() {
                         {String(m.rank).padStart(2, "0")}
                       </span>
 
-                      <span className="flex items-center gap-1 border-2 border-ink bg-accent px-2 py-1 text-xs font-bold">
+                      <span className="ml-tag ml-tag--compact gap-1">
                         <Star className="h-3 w-3 fill-ink" strokeWidth={2.5} />
-
                         {m.rating ?? "N/A"}
                       </span>
                     </div>
 
-                    {/* Full manga artwork */}
-                    <div className="mt-6 aspect-square w-full border-2 border-ink bg-paper flex items-center justify-center overflow-hidden">
+                    <div className="ml-panel mt-6 flex aspect-square w-full items-center justify-center overflow-hidden bg-paper">
                       <img
                         src={m.coverImage.large}
                         alt={m.title.english || m.title.romaji}
@@ -165,7 +150,6 @@ function Index() {
 
                     <div className="mt-4 flex items-center justify-between border-t border-ink/20 pt-3 text-xs font-semibold uppercase tracking-wide">
                       <span>{m.genres[0] ?? "Manga"}</span>
-
                       <span>{m.volumes !== null ? `${m.volumes} vols` : "Volumes N/A"}</span>
                     </div>
                   </Link>
@@ -177,31 +161,26 @@ function Index() {
       </section>
 
       {/* CREATE & READ */}
-      <section className="border-b-2 border-ink bg-ink text-paper">
+      <section className="ml-inverse-section">
         <div className="mx-auto grid max-w-7xl gap-12 px-4 py-20 sm:px-6 md:grid-cols-2">
           <div>
             <p className="text-xs font-bold uppercase tracking-widest text-accent">
               Create &amp; Read
             </p>
-            <h2 className="mt-2 font-display text-4xl text-paper sm:text-5xl text-white">
+            <h2 className="mt-2 font-display text-4xl sm:text-5xl">
               Your panels.
               <br />
               Your story.
               <br />
               <span className="text-primary">Published.</span>
             </h2>
-            <p className="mt-6 max-w-md text-paper/70 text-white">
+            <p className="mt-6 max-w-md opacity-70">
               Sketch chapters in the browser, drop in panels, and export print-ready PDFs the
               community can rate alongside the classics.
             </p>
             <div className="mt-8 flex gap-3">
-              <Link to="/login">
-                <Button
-                  size="lg"
-                  className="h-12 border-2 border-paper bg-primary font-display uppercase tracking-wider text-primary-foreground hover:bg-primary/90"
-                >
-                  <PenTool className="mr-2 h-5 w-5" /> Start a chapter
-                </Button>
+              <Link to="/login" className="ml-action-inverse">
+                <PenTool className="h-5 w-5" /> Start a chapter
               </Link>
             </div>
           </div>
@@ -230,7 +209,7 @@ function Index() {
                   "Private notes per volume",
                 ].map((f) => (
                   <li key={f} className="flex items-center gap-3">
-                    <span className="flex h-6 w-6 items-center justify-center border-2 border-ink bg-accent text-xs font-black">
+                    <span className="ml-tag ml-tag--compact h-6 w-6 justify-center p-0 text-xs font-black">
                       ✓
                     </span>
                     <span className="text-sm font-semibold">{f}</span>
@@ -238,24 +217,19 @@ function Index() {
                 ))}
               </ul>
               <div className="mt-8">
-                <Link to="/login">
-                  <Button
-                    size="lg"
-                    className="h-12 border-2 border-ink font-display uppercase tracking-wider shadow-stamp"
-                  >
-                    <BookMarked className="mr-2 h-5 w-5" /> Build my shelf
-                  </Button>
+                <Link to="/login" className="ml-action">
+                  <BookMarked className="h-5 w-5" /> Build my shelf
                 </Link>
               </div>
             </div>
             <div className="relative">
-              <div className="grid grid-cols-3 gap-2 border-2 border-ink bg-card p-4 shadow-stamp">
+              <div className="ml-card ml-card--strong grid grid-cols-3 gap-2 p-4">
                 {topManga.slice(0, 9).map((m) => (
                   <Link
                     key={m.id}
                     to="/manga/$id"
                     params={{ id: String(m.id) }}
-                    className="aspect-[2/3] overflow-hidden border border-ink bg-paper transition-transform hover:-translate-y-1 focus:outline-none focus-visible:ring-4 focus-visible:ring-primary/40"
+                    className="ml-shelf-tile aspect-[2/3]"
                     aria-label={`Open ${m.title.english || m.title.romaji}`}
                   >
                     <img
@@ -272,11 +246,12 @@ function Index() {
         </div>
       </section>
 
-      <footer className="border-t-2 border-ink bg-ink text-paper">
+      <footer className="border-t-2 border-ink bg-inverse text-inverse-foreground">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-4 py-8 sm:flex-row sm:px-6">
-          <p className="font-display text-white text-lg">SCOPEIN<span className="text-primary">LABS</span>
+          <p className="font-display text-lg">
+            SCOPEIN<span className="text-primary">LABS</span>
           </p>
-          <p className="text-xs uppercase tracking-widest text-white text-paper/60">
+          <p className="text-xs uppercase tracking-widest opacity-60">
             © Manga Labs — Read. Rate. Create.
           </p>
         </div>
