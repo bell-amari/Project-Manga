@@ -33,12 +33,12 @@ function StaffDetailPage() {
   const biography = cleanDescription(staff.description);
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] bg-paper">
-      <section className="border-b-2 border-ink">
+    <div className="ml-page">
+      <section className="ml-section">
         <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-14 lg:py-20">
           <div className="grid gap-10 lg:grid-cols-[320px_1fr] lg:gap-14">
             <div>
-              <div className="overflow-hidden border-2 border-ink bg-card shadow-stamp">
+              <div className="ml-card ml-card--strong overflow-hidden">
                 {staff.image.large || staff.image.medium ? (
                   <img
                     src={staff.image.large || staff.image.medium}
@@ -55,14 +55,8 @@ function StaffDetailPage() {
 
             <div className="flex min-w-0 flex-col justify-center">
               <div className="flex flex-wrap gap-2">
-                <span className="border-2 border-ink bg-accent px-3 py-1 text-xs font-bold uppercase tracking-widest">
-                  Staff Profile
-                </span>
-                {staff.language && (
-                  <span className="border-2 border-ink bg-card px-3 py-1 text-xs font-bold uppercase tracking-widest">
-                    {staff.language}
-                  </span>
-                )}
+                <span className="ml-tag">Staff Profile</span>
+                {staff.language && <span className="ml-tag-muted">{staff.language}</span>}
               </div>
 
               <h1 className="mt-5 font-display text-5xl leading-[0.95] tracking-tight sm:text-6xl lg:text-7xl">
@@ -78,10 +72,7 @@ function StaffDetailPage() {
               {staff.primaryOccupations.length > 0 && (
                 <div className="mt-6 flex flex-wrap gap-2">
                   {staff.primaryOccupations.map((occupation) => (
-                    <span
-                      key={occupation}
-                      className="border border-ink bg-card px-3 py-1 text-xs font-bold uppercase tracking-wide"
-                    >
+                    <span key={occupation} className="ml-chip">
                       {occupation}
                     </span>
                   ))}
@@ -109,7 +100,7 @@ function StaffDetailPage() {
                   href={staff.siteUrl}
                   target="_blank"
                   rel="noreferrer"
-                  className="mt-8 inline-flex w-fit items-center gap-2 border-2 border-ink bg-primary px-5 py-3 font-display text-sm uppercase tracking-wider text-primary-foreground shadow-stamp-sm transition-transform hover:-translate-y-0.5"
+                  className="ml-action mt-8"
                 >
                   View on AniList
                   <ExternalLink className="h-4 w-4" />
@@ -123,12 +114,8 @@ function StaffDetailPage() {
       <section>
         <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:py-16">
           <div className="mb-8">
-            <p className="text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground">
-              Selected works
-            </p>
-            <h2 className="mt-2 font-display text-4xl uppercase sm:text-5xl">
-              Manga Credits
-            </h2>
+            <p className="ml-kicker">Selected works</p>
+            <h2 className="ml-heading mt-2">Manga Credits</h2>
           </div>
 
           {staff.manga.length > 0 ? (
@@ -144,7 +131,7 @@ function StaffDetailPage() {
                     key={manga.id}
                     to="/manga/$id"
                     params={{ id: String(manga.id) }}
-                    className="group overflow-hidden border-2 border-ink bg-card shadow-stamp-sm transition-transform hover:-translate-y-1"
+                    className="ml-interactive-card group overflow-hidden"
                   >
                     <div className="aspect-[2/3] overflow-hidden border-b-2 border-ink bg-muted">
                       <img
@@ -166,7 +153,7 @@ function StaffDetailPage() {
               })}
             </div>
           ) : (
-            <div className="border-2 border-dashed border-ink/40 bg-card p-8 text-sm font-semibold text-muted-foreground">
+            <div className="ml-empty-state">
               No manga credits are currently available from AniList.
             </div>
           )}
@@ -178,11 +165,9 @@ function StaffDetailPage() {
 
 function InfoCard({ label, value }: { label: string; value: string }) {
   return (
-    <div className="border-2 border-ink bg-card p-4">
-      <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-        {label}
-      </p>
-      <p className="mt-2 font-display text-lg sm:text-xl">{value}</p>
+    <div className="ml-stat-card">
+      <p className="ml-stat-card__label">{label}</p>
+      <p className="ml-stat-card__value text-lg sm:text-xl">{value}</p>
     </div>
   );
 }
