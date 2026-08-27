@@ -9,6 +9,7 @@ import {
 } from "@tanstack/react-router";
 import { Toaster } from "@/components/ui/sonner";
 import { SiteHeader } from "@/components/site-header";
+import { THEME_STORAGE_KEY } from "@/lib/theme";
 
 import appCss from "../styles.css?url";
 
@@ -75,10 +76,17 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "Manga Labs — The Wiki for Manga Readers" },
-      { name: "description", content: "Discover top manga, track what you own, and build your shelf. Manga Labs is the bold wiki + bookshelf for readers worldwide." },
+      {
+        name: "description",
+        content:
+          "Discover top manga, track what you own, and build your shelf. Manga Labs is the bold wiki + bookshelf for readers worldwide.",
+      },
       { name: "author", content: "Manga Labs" },
       { property: "og:title", content: "Manga Labs — The Wiki for Manga Readers" },
-      { property: "og:description", content: "Top manga worldwide, ratings, and a personal bookshelf." },
+      {
+        property: "og:description",
+        content: "Top manga worldwide, ratings, and a personal bookshelf.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -101,10 +109,30 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   errorComponent: ErrorComponent,
 });
 
+const themeScript = `
+(function () {
+  try {
+    var key = ${JSON.stringify(THEME_STORAGE_KEY)};
+    var stored = window.localStorage.getItem(key);
+    var systemDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+    var theme = stored === "dark" || (stored !== "light" && systemDark) ? "dark" : "light";
+    var root = document.documentElement;
+
+    root.classList.toggle("dark", theme === "dark");
+    root.dataset.theme = theme;
+    root.style.colorScheme = theme;
+  } catch (error) {
+    // Theme preference is an enhancement. The app remains usable if storage
+    // or matchMedia is unavailable.
+  }
+})();
+`;
+
 function RootShell({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
         <HeadContent />
       </head>
       <body>
@@ -120,7 +148,7 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <div className="flex min-h-screen flex-col bg-background text-foreground">
+      <div className="app-shell">
         <SiteHeader />
         <main className="flex-1">
           <Outlet />

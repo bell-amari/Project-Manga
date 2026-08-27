@@ -8,6 +8,7 @@ import {
   MangaSearch,
   MobileMangaSearch,
 } from "@/components/manga-search";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export function SiteHeader() {
   const { user } = useAuth();
@@ -20,10 +21,10 @@ export function SiteHeader() {
   };
 
   return (
-    <header className="sticky top-0 z-40 border-b-2 border-ink bg-paper/95 backdrop-blur">
-      <div className="relative mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6">
+    <header className="site-header">
+      <div className="site-header__inner">
         <Link to="/" className="group flex items-center gap-2">
-          <div className="flex h-9 w-9 items-center justify-center bg-primary text-primary-foreground shadow-stamp-sm transition-transform group-hover:-rotate-3">
+          <div className="brand-mark">
             <BookOpen className="h-5 w-5" strokeWidth={2.5} />
           </div>
           <span className="font-display text-xl tracking-tight">
@@ -48,7 +49,7 @@ export function SiteHeader() {
           <MobileMangaSearch />
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="site-header__actions">
           {user ? (
             <>
               <Link to="/bookshelf">
@@ -80,6 +81,8 @@ export function SiteHeader() {
               </Button>
             </Link>
           )}
+
+          <ThemeToggle />
         </div>
       </div>
     </header>
