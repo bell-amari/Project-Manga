@@ -14,6 +14,7 @@ import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AuthenticatedBookshelfRouteImport } from './routes/_authenticated/bookshelf'
 import { Route as MangaIdRouteImport } from './routes/manga/$id'
+import { Route as StaffIdRouteImport } from './routes/staff/$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -39,18 +40,25 @@ const MangaIdRoute = MangaIdRouteImport.update({
   path: '/manga/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const StaffIdRoute = StaffIdRouteImport.update({
+  id: '/staff/$id',
+  path: '/staff/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/bookshelf': typeof AuthenticatedBookshelfRoute
   '/manga/$id': typeof MangaIdRoute
+  '/staff/$id': typeof StaffIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/bookshelf': typeof AuthenticatedBookshelfRoute
   '/manga/$id': typeof MangaIdRoute
+  '/staff/$id': typeof StaffIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -59,12 +67,13 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/_authenticated/bookshelf': typeof AuthenticatedBookshelfRoute
   '/manga/$id': typeof MangaIdRoute
+  '/staff/$id': typeof StaffIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '/bookshelf' | '/manga/$id'
+  fullPaths: '/' | '/login' | '/bookshelf' | '/manga/$id' | '/staff/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/bookshelf' | '/manga/$id'
+  to: '/' | '/login' | '/bookshelf' | '/manga/$id' | '/staff/$id'
   id:
     | '__root__'
     | '/'
@@ -72,6 +81,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/_authenticated/bookshelf'
     | '/manga/$id'
+    | '/staff/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -79,6 +89,7 @@ export interface RootRouteChildren {
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   LoginRoute: typeof LoginRoute
   MangaIdRoute: typeof MangaIdRoute
+  StaffIdRoute: typeof StaffIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -118,6 +129,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MangaIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/staff/$id': {
+      id: '/staff/$id'
+      path: '/staff/$id'
+      fullPath: '/staff/$id'
+      preLoaderRoute: typeof StaffIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -138,6 +156,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   LoginRoute: LoginRoute,
   MangaIdRoute: MangaIdRoute,
+  StaffIdRoute: StaffIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
