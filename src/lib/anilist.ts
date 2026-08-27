@@ -31,37 +31,6 @@ export type MangaStaffMember = {
   siteUrl: string;
 };
 
-export type StaffProfile = {
-  id: number;
-  name: PersonName;
-  image: {
-    large: string;
-    medium: string;
-  };
-  description: string | null;
-  gender: string | null;
-  age: number | null;
-  homeTown: string | null;
-  language: string | null;
-  primaryOccupations: string[];
-  yearsActive: number[] | null;
-  siteUrl: string;
-  manga: {
-    id: number;
-    title: {
-      english: string | null;
-      romaji: string;
-      native: string | null;
-    };
-    coverImage: {
-      large: string;
-      extraLarge: string;
-    };
-    averageScore: number | null;
-    siteUrl: string;
-  }[];
-};
-
 export type Manga = {
   id: number;
   rank?: number;
@@ -134,7 +103,7 @@ async function anilistRequest<T>(
   const result: AniListResponse<T> = await response.json();
 
   if (result.errors?.length) {
-    throw new Error(result.errors[0].message);
+    throw new Error(result.errors.map((error) => error.message).join(" | "));
   }
 
   if (!result.data) {
@@ -154,38 +123,42 @@ function mapManga(manga: any): Manga {
     )?.node?.name?.full ?? "Unknown";
 
   const characters: MangaCharacter[] =
-    manga.characters?.edges?.map((edge: any) => ({
-      id: edge.node.id,
-      name: {
-        full: edge.node.name?.full ?? "Unknown",
-        native: edge.node.name?.native ?? null,
-      },
-      image: {
-        large: edge.node.image?.large ?? "",
-        medium: edge.node.image?.medium ?? "",
-      },
-      description: edge.node.description ?? null,
-      gender: edge.node.gender ?? null,
-      age: edge.node.age ?? null,
-      role: edge.role ?? "UNKNOWN",
-      siteUrl: edge.node.siteUrl ?? "",
-    })) ?? [];
+    manga.characters?.edges
+      ?.filter((edge: any) => edge?.node)
+      .map((edge: any) => ({
+        id: edge.node.id,
+        name: {
+          full: edge.node.name?.full ?? "Unknown",
+          native: edge.node.name?.native ?? null,
+        },
+        image: {
+          large: edge.node.image?.large ?? "",
+          medium: edge.node.image?.medium ?? "",
+        },
+        description: edge.node.description ?? null,
+        gender: edge.node.gender ?? null,
+        age: edge.node.age ?? null,
+        role: edge.role ?? "UNKNOWN",
+        siteUrl: edge.node.siteUrl ?? "",
+      })) ?? [];
 
   const staff: MangaStaffMember[] =
-    manga.staff?.edges?.map((edge: any) => ({
-      id: edge.node.id,
-      name: {
-        full: edge.node.name?.full ?? "Unknown",
-        native: edge.node.name?.native ?? null,
-      },
-      image: {
-        large: edge.node.image?.large ?? "",
-        medium: edge.node.image?.medium ?? "",
-      },
-      role: edge.role ?? "Staff",
-      primaryOccupations: edge.node.primaryOccupations ?? [],
-      siteUrl: edge.node.siteUrl ?? "",
-    })) ?? [];
+    manga.staff?.edges
+      ?.filter((edge: any) => edge?.node)
+      .map((edge: any) => ({
+        id: edge.node.id,
+        name: {
+          full: edge.node.name?.full ?? "Unknown",
+          native: edge.node.name?.native ?? null,
+        },
+        image: {
+          large: edge.node.image?.large ?? "",
+          medium: edge.node.image?.medium ?? "",
+        },
+        role: edge.role ?? "Staff",
+        primaryOccupations: edge.node.primaryOccupations ?? [],
+        siteUrl: edge.node.siteUrl ?? "",
+      })) ?? [];
 
   return {
     id: manga.id,
@@ -242,8 +215,9 @@ const BASIC_MANGA_FIELDS = `
   siteUrl
 `;
 
+// AniList connections cap perPage at 25. Keep these at or below that limit.
 const STAFF_FIELDS = `
-  staff(perPage: 50) {
+  staff(perPage: 25) {
     edges {
       role
       node {
@@ -264,7 +238,7 @@ const STAFF_FIELDS = `
 `;
 
 const CHARACTER_FIELDS = `
-  characters(perPage: 30) {
+  characters(perPage: 25) {
     edges {
       role
       node {
@@ -298,13 +272,15 @@ const TOP_MANGA_QUERY = `
 `;
 
 export async function getTopManga(limit = 12): Promise<Manga[]> {
+  const safeLimit = Math.min(Math.max(limit, 1), 25);
+
   const data = await anilistRequest<{
     Page: {
       media: unknown[];
     };
   }>(TOP_MANGA_QUERY, {
     page: 1,
-    perPage: limit,
+    perPage: safeLimit,
   });
 
   return data.Page.media.map((manga, index) => ({
@@ -328,6 +304,10 @@ export async function getMangaById(id: number): Promise<Manga> {
     Media: any;
   }>(MANGA_BY_ID_QUERY, { id });
 
+  if (!data.Media) {
+    throw new Error("AniList could not find this manga.");
+  }
+
   return mapManga(data.Media);
 }
 
@@ -347,88 +327,9 @@ export async function getMangaByTitle(title: string): Promise<Manga> {
     search: title,
   });
 
-  return mapManga(data.Media);
-}
-
-const STAFF_BY_ID_QUERY = `
-  query ($id: Int!) {
-    Staff(id: $id) {
-      id
-      name {
-        full
-        native
-      }
-      image {
-        large
-        medium
-      }
-      description
-      gender
-      age
-      homeTown
-      languageV2
-      primaryOccupations
-      yearsActive
-      siteUrl
-      staffMedia(page: 1, perPage: 30, type: MANGA, sort: POPULARITY_DESC) {
-        nodes {
-          id
-          title {
-            english
-            romaji
-            native
-          }
-          coverImage {
-            large
-            extraLarge
-          }
-          averageScore
-          siteUrl
-        }
-      }
-    }
+  if (!data.Media) {
+    throw new Error("AniList could not find this manga.");
   }
-`;
 
-export async function getStaffById(id: number): Promise<StaffProfile> {
-  const data = await anilistRequest<{
-    Staff: any;
-  }>(STAFF_BY_ID_QUERY, { id });
-
-  const staff = data.Staff;
-
-  return {
-    id: staff.id,
-    name: {
-      full: staff.name?.full ?? "Unknown",
-      native: staff.name?.native ?? null,
-    },
-    image: {
-      large: staff.image?.large ?? "",
-      medium: staff.image?.medium ?? "",
-    },
-    description: staff.description ?? null,
-    gender: staff.gender ?? null,
-    age: staff.age ?? null,
-    homeTown: staff.homeTown ?? null,
-    language: staff.languageV2 ?? null,
-    primaryOccupations: staff.primaryOccupations ?? [],
-    yearsActive: staff.yearsActive ?? null,
-    siteUrl: staff.siteUrl ?? "",
-    manga:
-      staff.staffMedia?.nodes?.map((media: any) => ({
-        id: media.id,
-        title: {
-          english: media.title?.english ?? null,
-          romaji: media.title?.romaji ?? "",
-          native: media.title?.native ?? null,
-        },
-        coverImage: {
-          large: media.coverImage?.large ?? "",
-          extraLarge: media.coverImage?.extraLarge ?? "",
-        },
-        averageScore: media.averageScore ?? null,
-        siteUrl: media.siteUrl ?? "",
-      })) ?? [],
-  };
+  return mapManga(data.Media);
 }
