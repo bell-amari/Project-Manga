@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ExternalLink, Star } from "lucide-react";
-import { getStaffById } from "@/lib/anilist";
+import { getStaffById } from "@/lib/staff";
 
 export const Route = createFileRoute("/staff/$id")({
   loader: async ({ params }) => {
