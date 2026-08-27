@@ -1,11 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import {
-  ExternalLink,
-  Heart,
-  Layers3,
-  Star,
-  Users,
-} from "lucide-react";
+import { ExternalLink, Heart, Layers3, Star, Users } from "lucide-react";
 import { getMangaById } from "@/lib/anilist";
 import { getMangaExtras } from "@/lib/manga-extras";
 
@@ -60,12 +54,12 @@ function MangaDetailPage() {
   const description = cleanDescription(manga.description);
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] bg-paper">
-      <section className="border-b-2 border-ink">
+    <div className="ml-page">
+      <section className="ml-section">
         <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-14 lg:py-20">
           <div className="grid gap-10 lg:grid-cols-[minmax(320px,460px)_1fr] lg:gap-14">
             <div>
-              <div className="aspect-square overflow-hidden border-2 border-ink bg-card p-4 shadow-stamp sm:p-6">
+              <div className="ml-card ml-card--strong aspect-square overflow-hidden p-4 sm:p-6">
                 <img
                   src={manga.coverImage.extraLarge || manga.coverImage.large}
                   alt={`${title} cover`}
@@ -76,12 +70,8 @@ function MangaDetailPage() {
 
             <div className="flex min-w-0 flex-col justify-center">
               <div className="flex flex-wrap items-center gap-2">
-                <span className="border-2 border-ink bg-accent px-3 py-1 text-xs font-bold uppercase tracking-widest">
-                  Manga Profile
-                </span>
-                <span className="border-2 border-ink bg-card px-3 py-1 text-xs font-bold uppercase tracking-widest">
-                  {formatStatus(manga.status)}
-                </span>
+                <span className="ml-tag">Manga Profile</span>
+                <span className="ml-tag-muted">{formatStatus(manga.status)}</span>
               </div>
 
               <h1 className="mt-5 font-display text-5xl leading-[0.95] tracking-tight sm:text-6xl lg:text-7xl">
@@ -100,10 +90,7 @@ function MangaDetailPage() {
 
               <div className="mt-7 flex flex-wrap gap-2">
                 {manga.genres.map((genre) => (
-                  <span
-                    key={genre}
-                    className="border border-ink bg-card px-3 py-1 text-xs font-bold uppercase tracking-wide"
-                  >
+                  <span key={genre} className="ml-chip">
                     {genre}
                   </span>
                 ))}
@@ -155,7 +142,7 @@ function MangaDetailPage() {
                   href={manga.siteUrl}
                   target="_blank"
                   rel="noreferrer"
-                  className="mt-8 inline-flex w-fit items-center gap-2 border-2 border-ink bg-primary px-5 py-3 font-display text-sm uppercase tracking-wider text-primary-foreground shadow-stamp-sm transition-transform hover:-translate-y-0.5"
+                  className="ml-action mt-8"
                 >
                   View on AniList
                   <ExternalLink className="h-4 w-4" />
@@ -167,20 +154,14 @@ function MangaDetailPage() {
       </section>
 
       {manga.characters.length > 0 && (
-        <section className="border-b-2 border-ink">
+        <section className="ml-section">
           <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:py-16">
             <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
               <div>
-                <p className="text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground">
-                  Story guide
-                </p>
-                <h2 className="mt-2 font-display text-4xl uppercase sm:text-5xl">
-                  Characters
-                </h2>
+                <p className="ml-kicker">Story guide</p>
+                <h2 className="ml-heading mt-2">Characters</h2>
               </div>
-              <span className="border border-ink bg-card px-3 py-1 text-xs font-bold uppercase tracking-wider">
-                {manga.characters.length} shown
-              </span>
+              <span className="ml-chip">{manga.characters.length} shown</span>
             </div>
 
             <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
@@ -188,10 +169,7 @@ function MangaDetailPage() {
                 const characterDescription = cleanDescription(character.description);
 
                 return (
-                  <article
-                    key={character.id}
-                    className="group overflow-hidden border-2 border-ink bg-card shadow-stamp-sm"
-                  >
+                  <article key={character.id} className="ml-card group overflow-hidden">
                     <div className="grid grid-cols-[110px_1fr] sm:grid-cols-[125px_1fr]">
                       <div className="min-h-44 border-r-2 border-ink bg-muted">
                         {character.image.large || character.image.medium ? (
@@ -210,7 +188,7 @@ function MangaDetailPage() {
 
                       <div className="flex min-w-0 flex-col p-4">
                         <div className="flex flex-wrap gap-2">
-                          <span className="w-fit border border-ink bg-accent px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider">
+                          <span className="ml-tag ml-tag--compact w-fit">
                             {formatStatus(character.role)}
                           </span>
                           {character.gender && (
@@ -264,12 +242,8 @@ function MangaDetailPage() {
         <section>
           <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:py-16">
             <div className="mb-8">
-              <p className="text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground">
-                Behind the pages
-              </p>
-              <h2 className="mt-2 font-display text-4xl uppercase sm:text-5xl">
-                Staff
-              </h2>
+              <p className="ml-kicker">Behind the pages</p>
+              <h2 className="ml-heading mt-2">Staff</h2>
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -277,7 +251,7 @@ function MangaDetailPage() {
                 <a
                   key={`${member.id}-${member.role}-${index}`}
                   href={`/staff/${member.id}`}
-                  className="group flex min-h-32 overflow-hidden border-2 border-ink bg-card shadow-stamp-sm transition-transform hover:-translate-y-1"
+                  className="ml-interactive-card group flex min-h-32 overflow-hidden"
                 >
                   <div className="w-28 shrink-0 border-r-2 border-ink bg-muted sm:w-32">
                     {member.image.large || member.image.medium ? (
@@ -335,12 +309,12 @@ function StatCard({
   value: string;
 }) {
   return (
-    <div className="border-2 border-ink bg-card p-4">
-      <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-muted-foreground">
+    <div className="ml-stat-card">
+      <div className="ml-stat-card__label">
         {icon}
         {label}
       </div>
-      <p className="mt-2 font-display text-xl sm:text-2xl">{value}</p>
+      <p className="ml-stat-card__value">{value}</p>
     </div>
   );
 }
