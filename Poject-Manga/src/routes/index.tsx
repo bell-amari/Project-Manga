@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Link } from "@tanstack/react-router";
 import { ArrowRight, BookMarked, PenTool, Star, Trophy } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import heroImg from "@/assets/hero-manga.jpg";
+import heroImg from "@/assets/hero-manga.png";
 import { useEffect, useState } from "react";
 import { getTopManga, type Manga } from "../lib/anilist";
 
