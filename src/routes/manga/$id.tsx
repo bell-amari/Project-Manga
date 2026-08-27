@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import {
   ExternalLink,
   Heart,
@@ -7,6 +7,7 @@ import {
   Users,
 } from "lucide-react";
 import { getMangaById } from "@/lib/anilist";
+import { getMangaExtras } from "@/lib/manga-extras";
 
 export const Route = createFileRoute("/manga/$id")({
   loader: async ({ params }) => {
@@ -16,7 +17,13 @@ export const Route = createFileRoute("/manga/$id")({
       throw new Error("Invalid manga ID.");
     }
 
-    return getMangaById(id);
+    const manga = await getMangaById(id);
+    const extras = await getMangaExtras(id);
+
+    return {
+      ...manga,
+      ...extras,
+    };
   },
   component: MangaDetailPage,
 });
@@ -267,10 +274,9 @@ function MangaDetailPage() {
 
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {manga.staff.map((member, index) => (
-                <Link
+                <a
                   key={`${member.id}-${member.role}-${index}`}
-                  to="/staff/$id"
-                  params={{ id: String(member.id) }}
+                  href={`/staff/${member.id}`}
                   className="group flex min-h-32 overflow-hidden border-2 border-ink bg-card shadow-stamp-sm transition-transform hover:-translate-y-1"
                 >
                   <div className="w-28 shrink-0 border-r-2 border-ink bg-muted sm:w-32">
@@ -309,7 +315,7 @@ function MangaDetailPage() {
                       Full staff page →
                     </span>
                   </div>
-                </Link>
+                </a>
               ))}
             </div>
           </div>
