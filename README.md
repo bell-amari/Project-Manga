@@ -24,7 +24,7 @@ The long-term goal is to combine:
 * User-created manga libraries
 * Personalized recommendations
 
-Manga Labs is part of **ScopeIn Labs**.
+Manga Labs is part of **Scopein Labs**.
 
 ---
 
@@ -122,7 +122,7 @@ Current or planned technologies include:
 
 * GitHub — source control
 * Cloudflare — DNS, CDN, security, and deployment infrastructure
-* ScopeIn Labs domain infrastructure
+* Scopein Labs domain infrastructure
 
 Production application:
 
